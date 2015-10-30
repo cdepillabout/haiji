@@ -3,18 +3,37 @@ sudo: false
 #  directories:
 #    - "$HOME/.local/"
 #    - "$HOME/.stack/"
-addons:
-  apt:
-    sources:
-      - hvr-ghc
-    packages:
-      - ghc-7.10.2
+matrix:
+  include:
+    - env: GHCVER=7.8.4 STACK_YAML=stack-lts-2.yaml
+      addons:
+        apt:
+          sources:
+            - hvr-ghc
+          packages:
+            - ghc-7.8.4
+    - env: GHCVER=7.10.2 STACK_YAML=stack.yaml
+      addons:
+        apt:
+          sources:
+            - hvr-ghc
+          packages:
+            - ghc-7.10.2
+    - env: GHCVER=head STACK_YAML=stack-head.yaml
+      addons:
+        apt:
+          sources:
+            - hvr-ghc
+          packages:
+            - ghc-head
+  allow_failures:
+    - env: GHCVER=head STACK_YAML=stack-head.yaml
 before_install:
   # stack
   - mkdir -p ~/.local/bin
   - export PATH=~/.local/bin:$PATH
   - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
-  - export PATH=/opt/ghc/7.8.4/bin:$PATH
+  - export PATH=/opt/ghc/$GHCVER/bin:$PATH
   - stack update
 install:
   - stack --no-terminal --skip-ghc-check setup
@@ -25,18 +44,7 @@ install:
   - stack --no-terminal --skip-ghc-check install hpc-coveralls
 
 script:
-  # - if [ -f configure.ac ]; then autoreconf -i; fi
-  # -v2 provides useful information for debugging
-  # Option --enable-library-coverage is obsolete.
-  # Use --enable-coverage instead if it available.
-  #- if cabal configure --help | grep 'enable-coverage' > /dev/null;
-  #  then
-  #    cabal configure --enable-tests --enable-benchmarks --enable-coverage         -v2 --ghc-options="-Wall -Werror";
-  #  else
-  #    cabal configure --enable-tests --enable-benchmarks --enable-library-coverage -v2 --ghc-options="-Wall -Werror";
-  #  fi
-
-  - stack --no-terminal --skip-ghc-check test
+  - stack --no-terminal --skip-ghc-check test --coverage
   - stack --no-terminal --skip-ghc-check sdist
 
   # check that the generated source-distribution can be built & installed
