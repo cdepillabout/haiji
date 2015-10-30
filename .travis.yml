@@ -17,12 +17,12 @@ before_install:
   - export PATH=/opt/ghc/7.8.4/bin:$PATH
   - stack update
 install:
-  - ./travis_long stack --no-terminal --skip-ghc-check setup
-  - ./travis_long stack --no-terminal --skip-ghc-check test --only-snapshot
+  - stack --no-terminal --skip-ghc-check setup
+  - stack --no-terminal --skip-ghc-check test --only-snapshot
   # install jinja2
   - pip install --user Jinja2
   # install hpc-coveralls
-  - ./travis_long stack --no-terminal --skip-ghc-check install hpc-coveralls
+  - stack --no-terminal --skip-ghc-check install hpc-coveralls
 
 script:
   # - if [ -f configure.ac ]; then autoreconf -i; fi
