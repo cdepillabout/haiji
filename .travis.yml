@@ -4,11 +4,11 @@ cache:
     - "$HOME/.stack/"
 matrix:
   include:
-    - env: GHCVER=7.8.4  STACK_YAML=stack-lts-2.yaml
-    - env: GHCVER=7.10.2 STACK_YAML=stack.yaml
-    - env: GHCVER=head   STACK_YAML=stack-head.yaml
+    - env: STACK=lts-2
+    - env: STACK=lts-3
+    - env: STACK=nightly
   allow_failures:
-    - env: GHCVER=head   STACK_YAML=stack-head.yaml
+    - env: STACK=nightly
 addons:
   apt:
     packages:
@@ -18,6 +18,8 @@ before_install:
   - mkdir -p ~/.local/bin
   - export PATH=~/.local/bin:$PATH
   - travis_retry curl -L https://www.stackage.org/stack/linux-x86_64 | tar xz --wildcards --strip-components=1 -C ~/.local/bin '*/stack'
+  - ./latest $STACK > stack-travis.yaml
+  - export STACK_YAML=stack-travis.yaml
   - stack update
 install:
   - stack --no-terminal --skip-ghc-check setup
